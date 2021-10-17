@@ -9,6 +9,7 @@ const save = (k, v) => new Promise(resolve => {
   entry[k] = v;
   chrome.storage.local.set(entry, resolve);
   if (lastSave < Date.now() - syncEveryMs) {
+    lastSave = Date.now();
     chrome.storage.sync.set(entry, resolve);
   }
 });

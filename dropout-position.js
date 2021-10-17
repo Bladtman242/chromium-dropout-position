@@ -1,15 +1,15 @@
 const url = window.location.pathname;
 
 const syncEveryMs = 1 * 60 * 1000; // 1 minute
-let lastSave = Date.now();
+let lastSync = Date.now();
 
 
 const save = (k, v) => new Promise(resolve => {
   const entry = {};
   entry[k] = v;
   chrome.storage.local.set(entry, resolve);
-  if (lastSave < Date.now() - syncEveryMs) {
-    lastSave = Date.now();
+  if (lastSync < Date.now() - syncEveryMs) {
+    lastSync = Date.now();
     chrome.storage.sync.set(entry, resolve);
   }
 });

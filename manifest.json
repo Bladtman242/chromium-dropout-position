@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "dropout-position",
+  "version": "1",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.dropout.tv/*videos/*"
+      ],
+      "js": ["player.js", "dropout-position.js"]
+    }
+  ]
+}

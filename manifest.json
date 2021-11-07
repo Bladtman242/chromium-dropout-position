@@ -8,7 +8,7 @@
   "content_scripts": [
     {
       "matches": [
-        "*://www.dropout.tv/*videos/*"
+        "*://www.dropout.tv/*"
       ],
       "js": ["player.js", "dropout-position.js"]
     }

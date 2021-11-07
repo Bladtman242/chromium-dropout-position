@@ -72,9 +72,15 @@ const handlePlay = async () => {
   if(savedTime) {
     player.currentTime(savedTime);
   }
+
   player.on('timeupdate', (e,time) => {
     save(path, { currentTime: time });
   });
+
+  if(season){
+    const showSeasonKey = `${show}\season`;
+    save(showSeasonKey, { lastWatchedSeason: season });
+  }
 }
 
 const secondsFromDurationString = (duration) => {
@@ -84,6 +90,13 @@ const secondsFromDurationString = (duration) => {
 }
 
 const handleListing = async () => {
+  if(!season) {
+    const storedSeason = await get(`${show}\season`);
+    if(storedSeason) {
+      window.location.pathname = `${show}/${storedSeason.lastWatchedSeason}`;
+    }
+  }
+
   // Might be overly specific, but better that than the alternative. The link
   // contains the thumbnail image, but isn't the whole card (the episode title
   // is outside this element)

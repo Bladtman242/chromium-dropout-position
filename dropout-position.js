@@ -119,7 +119,7 @@ const handleListing = async () => {
     const pStyle = progressBar.style;
     pStyle.backgroundColor = 'red';
     pStyle.position = 'absolute';
-    pStyle.top = '98%';
+    pStyle.height = '1px';
     pStyle.bottom = 0;
     pStyle.left = 0;
     pStyle.right = `${100 * (1 - currentTimePercent)}%`;

@@ -94,6 +94,7 @@ const handleListing = async () => {
     const storedSeason = await get(`${show}\season`);
     if(storedSeason) {
       window.location.pathname = `${show}/${storedSeason.lastWatchedSeason}`;
+      return;
     }
   }
 

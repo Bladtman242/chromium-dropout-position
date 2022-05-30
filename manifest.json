@@ -1,10 +1,13 @@
 {
-  "manifest_version": 2,
-  "name": "dropout-position",
-  "version": "1",
+  "manifest_version": 3,
+  "name": "dropout-progress",
+  "version": "1.1.0",
   "permissions": [
     "storage"
   ],
+  "icons": {
+    "128": "icon-128x128.png"
+  },
   "content_scripts": [
     {
       "matches": [

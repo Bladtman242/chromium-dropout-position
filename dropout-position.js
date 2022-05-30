@@ -118,32 +118,38 @@ const handleListing = async () => {
     const currentTime = typeof entry === 'number' ? entry : entry.currentTime;
     const currentTimePercent = currentTime / duration;
 
-    const overlay = document.createElement('SPAN');
-    const oStyle = overlay.style;
-    oStyle.backgroundColor = 'black';
-    oStyle.opacity = 0.8;
-    oStyle.position = 'absolute';
-    oStyle.top = '0';
-    oStyle.bottom = '0';
-    oStyle.left = '0';
-    oStyle.right = '0';
+    const isSeen = currentTimePercent >= 0.94;
+    const overlay = isSeen ? document.createElement('SPAN') : undefined;
+    if(isSeen) {
+      const oStyle = overlay.style;
+      oStyle.backgroundColor = 'black';
+      oStyle.opacity = 0.8;
+      oStyle.position = 'absolute';
+      oStyle.top = '0';
+      oStyle.bottom = '0';
+      oStyle.left = '0';
+      oStyle.right = '0';
+    }
 
     const progressBar = document.createElement('SPAN');
-    progressBar.class = 'progress';
     const pStyle = progressBar.style;
     pStyle.backgroundColor = 'red';
     pStyle.position = 'absolute';
     pStyle.height = '1px';
-    pStyle.bottom = 0;
-    pStyle.left = 0;
+    pStyle.bottom = '-1px';
+    pStyle.left = '0px';
     pStyle.right = `${100 * (1 - currentTimePercent)}%`;
 
     const progressUnderlay = progressBar.cloneNode();
     const puStyle = progressUnderlay.style;
     puStyle.backgroundColor = 'black';
-    puStyle.right = 0;
+    puStyle.height = '1px';
+    puStyle.bottom = '-1px';
+    puStyle.right = '0px';
 
-    video.appendChild(overlay);
+    if(isSeen) {
+      video.appendChild(overlay);
+    }
     video.appendChild(progressUnderlay);
     video.appendChild(progressBar);
   });

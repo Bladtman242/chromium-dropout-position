@@ -110,23 +110,44 @@ const handleListing = async () => {
       return;
     }
   }
+  insertEpisodeOverlays();
+}
 
+const getVideoThumbnails = () => {
   // Might be overly specific, but better that than the alternative. The link
   // contains the thumbnail image, but isn't the whole card (the episode title
   // is outside this element)
   const videos = document.querySelectorAll('li[data-item-type="video"] div.grid-item-padding a.browse-item-link');
-  const entryPromises = [...videos].map( async (v) => {
-    const path = new URL(v.href).pathname;
-    const entry = await get(path);
-    return [v, entry];
+  const withPaths = [...videos].map( (video) => {
+    const duration = secondsFromDurationString(video.querySelector('.duration-container').innerHTML.trim());
+    const path = new URL(video.href).pathname;
+    return {
+      video,
+      path,
+      duration,
+    };
   });
+  return withPaths;
+}
+
+const insertEpisodeOverlays = async () => {
+  const videos = getVideoThumbnails();
+
+  const entryPromises = videos.map( async (videoData) => {
+    const entry = await get(videoData.path);
+    return {
+      ...videoData,
+      entry,
+    }
+  });
+
   const videoEntries = await Promise.all(entryPromises);
-  videoEntries.forEach(([video, entry]) => {
+
+  videoEntries.forEach(({ video, duration, entry }) => {
     if(undefined === entry) {
       return;
     }
 
-    const duration = secondsFromDurationString(video.querySelector('.duration-container').innerHTML.trim());
     // Compatibility: we used to just store the current time directly
     const currentTime = typeof entry === 'number' ? entry : entry.currentTime;
     const currentTimePercent = currentTime / duration;

@@ -1,3 +1,12 @@
+var DEBUG = false;
+
+const originalLog = console.log;
+
+console.log =
+  DEBUG
+  ? (...args) => originalLog(...args)
+  : () => undefined
+
 const pagetypeEnum = {
   EPISODELISTING: { val: "pagetype.EPISODELISTING" },
   VIDEO: { val: "pagetype.VIDEO" },

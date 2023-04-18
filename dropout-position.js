@@ -111,6 +111,7 @@ const handleListing = async () => {
     }
   }
   insertEpisodeOverlays();
+  insertMarkSeasonAsSeen();
 }
 
 const getVideoThumbnails = () => {
@@ -187,6 +188,55 @@ const insertEpisodeOverlays = async () => {
     video.appendChild(progressUnderlay);
     video.appendChild(progressBar);
   });
+}
+
+const insertMarkSeasonAsSeen = () => {
+  const containerDiv = document.querySelectorAll('.season-controls .grid-padding-left')[0];
+  const form = document.createElement('FORM');
+  const select = document.createElement('SELECT');
+
+  form.classList.add('select-dropdown-wrapper');
+  form.setAttribute('autocomplete', 'off');
+
+  select.classList.add('btn-dropdown-transparent');
+  form.appendChild(select);
+
+  const markAs= async (f) => {
+    if(!confirm('Are you sure? This will overwrite the stored progress for all episodes in this season.')) {
+      return;
+    }
+
+    const videos = getVideoThumbnails();
+    const savePromises = videos.map((v) => {
+      return save(v.path, Entry(f(v)));
+    });
+
+    await Promise.all(savePromises);
+    location.reload();
+  };
+
+  const buttons = {
+    'dropout-position': () => {},
+    'mark season as watched': () => markAs((v) => v.duration),
+    'mark season as new': () => markAs(() => 0),
+  };
+
+  Object.entries(buttons).forEach(([text, clickHandler]) => {
+    const button = document.createElement('OPTION');
+    button.setAttribute('value', text);
+    button.innerText=text;
+    select.appendChild(button);
+  });
+
+  select.addEventListener('change', (event) => {
+    console.log(event.target.value);
+    console.log(buttons);
+    console.log(buttons[event.target.value]);
+    buttons[event.target.value]()
+  });
+
+
+  containerDiv.appendChild(form);
 }
 
 if (pagetype === pagetypeEnum.VIDEO){

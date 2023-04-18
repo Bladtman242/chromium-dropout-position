@@ -45,6 +45,10 @@ const pagetype =
     ? pagetypeEnum.EPISODELISTING
     : pagetypeEnum.OTHER;
 
+const Entry = (time) => {
+    return { currentTime: time }
+}
+
 const save = (k, v) => new Promise(resolve => {
   const entry = {};
   entry[k] = v;
@@ -83,7 +87,7 @@ const handlePlay = async () => {
   }
 
   player.on('timeupdate', (e,time) => {
-    save(path, { currentTime: time });
+    save(path, Entry(time));
   });
 
   if(season){

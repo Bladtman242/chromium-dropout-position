@@ -229,9 +229,6 @@ const insertMarkSeasonAsSeen = () => {
   });
 
   select.addEventListener('change', (event) => {
-    console.log(event.target.value);
-    console.log(buttons);
-    console.log(buttons[event.target.value]);
     buttons[event.target.value]()
   });
 

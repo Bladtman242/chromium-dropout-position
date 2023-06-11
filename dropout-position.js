@@ -50,25 +50,50 @@ const Entry = (time) => {
     return { currentTime: time }
 }
 
-const save = (k, v) => new Promise(resolve => {
-  const entry = {};
-  entry[k] = v;
-  chrome.storage.local.set(entry, resolve);
+const removeBulk = async (entries) => {
+  await chrome.storage.local.remove(entries);
+  await chrome.storage.sync.remove(entries);
+}
+
+const saveBulk = async (entries) => {
+  await chrome.storage.local.set(entries);
+  try {
+    await chrome.storage.sync.set(entries);
+  } catch {
+  }
+};
+
+const getBulk = async keys => {
+  const entries_local = await chrome.storage.local.get(keys);
+  const entries_sync = await chrome.storage.sync.get(keys);
+  const entries = {
+    ...entries_local,
+    ...entries_sync,
+  };
+  await saveBulk(entries);
+  return entries;
+};
+
+const save = async (k, v) => {
+  const entry = {
+    [k]: v
+  };
+  await chrome.storage.local.set(entry);
   if (lastSync < Date.now() - syncEveryMs) {
     lastSync = Date.now();
-    chrome.storage.sync.set(entry, resolve);
+    await chrome.storage.sync.set(entry);
   }
-});
+};
 
-const get = k => new Promise(resolve => {
-  chrome.storage.local.get(k, (entry) => {
-    if(entry) {
-      resolve(entry[k]);
-    } else {
-      chrome.storage.sync.get(k, (entry) => resolve(entry[k]));
-    }
-  });
-});
+const get = async k => {
+  const entry = await chrome.storage.local.get(k);
+  if(entry) {
+    return entry[k];
+  } else {
+    const entry = await chrome.storage.sync.get(k);
+    return entry[k];
+  }
+};
 
 const handlePlay = async () => {
   const player = VHX.Player('watch-embed');
@@ -87,13 +112,13 @@ const handlePlay = async () => {
     player.currentTime(savedTime);
   }
 
-  player.on('timeupdate', (e,time) => {
-    save(path, Entry(time));
+  player.on('timeupdate', async (e,time) => {
+    await save(path, Entry(time));
   });
 
   if(season){
     const showSeasonKey = `${show}\season`;
-    save(showSeasonKey, { lastWatchedSeason: season });
+    await save(showSeasonKey, { lastWatchedSeason: season });
   }
 }
 
@@ -135,15 +160,14 @@ const getVideoThumbnails = () => {
 const insertEpisodeOverlays = async () => {
   const videos = getVideoThumbnails();
 
-  const entryPromises = videos.map( async (videoData) => {
-    const entry = await get(videoData.path);
+  const entryKeys = videos.map((v) => v.path);
+  const entries = await getBulk(entryKeys);
+  const videoEntries = videos.map((v) => {
     return {
-      ...videoData,
-      entry,
+      ...v,
+      entry: entries[v.path],
     }
   });
-
-  const videoEntries = await Promise.all(entryPromises);
 
   videoEntries.forEach(({ video, duration, entry }) => {
     if(undefined === entry) {
@@ -200,17 +224,29 @@ const insertMarkSeasonAsSeen = () => {
   select.classList.add('btn-dropdown-transparent');
   form.appendChild(select);
 
-  const markAs= async (f) => {
+  const markAs = async (f) => {
     if(!confirm('Are you sure? This will overwrite the stored progress for all episodes in this season.')) {
       return;
     }
 
     const videos = getVideoThumbnails();
-    const savePromises = videos.map((v) => {
-      return save(v.path, Entry(f(v)));
-    });
+    const entries = {};
+    const toRemove = [];
 
-    await Promise.all(savePromises);
+    videos.forEach((v) => {
+      const key = v.path;
+      const entry = Entry(f(v));
+
+      if (entry.currentTime === 0) {
+        toRemove.push(key);
+      } else {
+        entries[key] = entry;
+      }
+    })
+
+    const savePromise = saveBulk(entries);
+    const removePromise = removeBulk(toRemove);
+    Promise.all([savePromise, removePromise]);
     location.reload();
   };
 

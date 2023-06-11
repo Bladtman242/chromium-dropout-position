@@ -13,7 +13,7 @@ const pagetypeEnum = {
   OTHER: { val: "pagetype.OTHER" },
 };
 
-const syncEveryMs = 1 * 60 * 1000; // 1 minute
+const syncEveryMs = 1.2 * 1/(1800/60/60/1000); // limited to 1800 calls per hour, with a 20% margin for our sake
 let lastSync = Date.now();
 
 String.prototype.match_safe = function(regex) {
@@ -21,6 +21,7 @@ String.prototype.match_safe = function(regex) {
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const waitUntil = async (f, ms) => {
   if (f()) {
     return;

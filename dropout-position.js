@@ -215,7 +215,7 @@ const insertMarkSeasonAsSeen = () => {
   };
 
   const buttons = {
-    'dropout-position': () => {},
+    'dropout-progress': () => {},
     'mark season as watched': () => markAs((v) => v.duration),
     'mark season as new': () => markAs(() => 0),
   };

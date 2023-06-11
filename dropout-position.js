@@ -179,8 +179,6 @@ const insertEpisodeOverlays = async () => {
     const progressUnderlay = progressBar.cloneNode();
     const puStyle = progressUnderlay.style;
     puStyle.backgroundColor = 'black';
-    puStyle.height = '1px';
-    puStyle.bottom = '-1px';
     puStyle.right = '0px';
 
     if(isSeen) {

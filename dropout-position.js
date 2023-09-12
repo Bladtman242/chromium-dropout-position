@@ -1,5 +1,8 @@
 var DEBUG = false;
 
+// "fixes" firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1372649
+window.addEventListener = window.addEventListener.bind(window);
+
 const originalLog = console.log;
 
 console.log =

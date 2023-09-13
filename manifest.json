@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "dropout-progress",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "{90e32c40-5b2a-42f5-92f0-ba2314b3ab5f}"

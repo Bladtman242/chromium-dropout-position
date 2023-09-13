@@ -139,6 +139,8 @@ const handleListing = async () => {
       return;
     }
   }
+
+  delteBuiltInProgressBars();
   insertEpisodeOverlays();
   insertMarkSeasonAsSeen();
 }
@@ -158,6 +160,11 @@ const getVideoThumbnails = () => {
     };
   });
   return withPaths;
+}
+
+const delteBuiltInProgressBars = async () => {
+  [...document.getElementsByClassName('percentage-bar-container')]
+    .forEach( (e) => { e.remove() });
 }
 
 const insertEpisodeOverlays = async () => {
